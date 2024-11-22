@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Output,
 } from '@angular/core';
 import {
@@ -17,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { HttpClient } from '@angular/common/http';
 import { ProductsService } from '../../services/products.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const CATEGORIES = ['Electronics', 'Food', 'Furniture'];
 const CURRENCIES = ['EUR', 'USD'];
@@ -40,6 +42,7 @@ export class AddProductFormComponent {
     private productsService: ProductsService
   ) {}
 
+  private _snackBar = inject(MatSnackBar);
   @Output() submitEmitter: EventEmitter<void> = new EventEmitter<void>();
 
   categories: string[] = CATEGORIES;
@@ -53,20 +56,24 @@ export class AddProductFormComponent {
       Validators.minLength(1),
     ]),
     description: new FormControl(''),
-    currency: new FormControl('', [Validators.required]),
   });
 
   ngOnInit() {
     this.registerForm.events.subscribe((event) => {
-      if (event instanceof FormSubmittedEvent && this.registerForm.valid) {
-        this.productsService.createProduct({
-          name: this.registerForm.value.name ?? '',
-          price: this.registerForm.value.price ?? 0,
-          category: this.registerForm.value.category ?? '',
-          description: this.registerForm.value.description ?? '',
-          currency: this.registerForm.value.currency ?? '',
-        });
-        this.submitEmitter.emit();
+      if (event instanceof FormSubmittedEvent) {
+        if (this.registerForm.valid) {
+          this.productsService.createProduct({
+            name: this.registerForm.value.name ?? '',
+            price: this.registerForm.value.price ?? 0,
+            category: this.registerForm.value.category ?? '',
+            description: this.registerForm.value.description ?? '',
+            currency: 'EUR',
+          });
+          this.submitEmitter.emit();
+          this._snackBar.open('Product created!', 'Dismiss', {
+            duration: 2000,
+          });
+        }
       }
     });
   }

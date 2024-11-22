@@ -21,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDeleteProductDialog } from '../delete-product-dialog/delete-product-dialog.component';
 import { UpdateProductDialog } from '../update-product-dialog/update-product-dialog.component';
 import { CurrentUserService } from '../../services/current-user-service.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'products-table',
@@ -40,6 +41,7 @@ import { CurrentUserService } from '../../services/current-user-service.service'
 export class ProductsTableComponent implements AfterViewInit {
   readonly confirmDeleteDialog = inject(MatDialog);
   readonly updateProductDialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
 
   isLoggedIn: boolean = false;
 
@@ -67,7 +69,6 @@ export class ProductsTableComponent implements AfterViewInit {
     this.currentUserService.currentUser$.subscribe((user) => {
       if (user !== undefined) {
         this.isLoggedIn = true;
-        console.log('USR', user);
         this.displayedColumns.push('Action');
       }
     });
@@ -98,7 +99,13 @@ export class ProductsTableComponent implements AfterViewInit {
     this.confirmDeleteDialog.open(ConfirmDeleteProductDialog, {
       width: '100%',
       maxWidth: '576px',
-      data: { productId, action: () => this.deleteProduct(productId) },
+      data: {
+        productId,
+        action: () => {
+          this.deleteProduct(productId);
+          this._snackBar.open('Product deleted', 'Dismiss');
+        },
+      },
     });
   }
 
@@ -106,7 +113,12 @@ export class ProductsTableComponent implements AfterViewInit {
     this.updateProductDialog.open(UpdateProductDialog, {
       width: '100%',
       maxWidth: '576px',
-      data: { product, action: () => this.updateProduct(product) },
+      data: {
+        product,
+        action: () => {
+          this.updateProduct(product);
+        },
+      },
     });
   }
 

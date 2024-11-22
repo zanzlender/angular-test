@@ -17,7 +17,7 @@
         placeholder="0"
         formControlName="price"
       />
-      <span matTextPrefix>$&nbsp;</span>
+      <span matTextPrefix>EUR&nbsp;</span>
       @if (registerForm.get("price")?.errors) {
       <mat-error>Price must be greater that 0</mat-error>
       }
@@ -40,10 +40,6 @@
         matInput
         formControlName="description"
       ></textarea>
-    </mat-form-field>
-    <mat-form-field class="example-full-width">
-      <mat-label>Currency</mat-label>
-      <input id="name-input" matInput formControlName="currency" />
     </mat-form-field>
 
     <button mat-flat-button type="submit">Save changes</button>

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ProductsService } from '../../services/products.service';
 import { Product } from '../../models/product.model';
 import { Observable, Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const CATEGORIES = ['Electronics', 'Food', 'Furniture'];
 
@@ -35,6 +36,8 @@ export class UpdateProductFormComponent {
     private productsService: ProductsService
   ) {}
 
+  private _snackBar = inject(MatSnackBar);
+
   @Input() product: Product | undefined = undefined;
   @Output() submitEmitter: EventEmitter<void> = new EventEmitter<void>();
 
@@ -53,7 +56,6 @@ export class UpdateProductFormComponent {
       Validators.minLength(1),
     ]),
     description: new FormControl(this.product?.description),
-    currency: new FormControl(this.product?.currency, [Validators.required]),
   });
 
   ngOnInit() {
@@ -62,21 +64,24 @@ export class UpdateProductFormComponent {
       price: this.product?.price,
       category: this.product?.category,
       description: this.product?.description,
-      currency: this.product?.currency,
     });
 
     this.registerForm.events.subscribe((event) => {
-      console.log('HERE', this.registerForm.valid);
-      if (event instanceof FormSubmittedEvent && this.registerForm.valid) {
-        this.productsService.updateProduct({
-          id: this.product?.id ?? 0,
-          name: this.registerForm.value.name ?? '',
-          price: this.registerForm.value.price ?? 0,
-          category: this.registerForm.value.category ?? '',
-          description: this.registerForm.value.description ?? '',
-          currency: this.registerForm.value.currency ?? '',
-        });
-        this.submitEmitter.emit();
+      if (event instanceof FormSubmittedEvent) {
+        if (this.registerForm.valid) {
+          this.productsService.updateProduct({
+            id: this.product?.id ?? 0,
+            name: this.registerForm.value.name ?? '',
+            price: this.registerForm.value.price ?? 0,
+            category: this.registerForm.value.category ?? '',
+            description: this.registerForm.value.description ?? '',
+            currency: 'EUR',
+          });
+          this.submitEmitter.emit();
+          this._snackBar.open('Product updated!', 'Dismiss', {
+            duration: 2000,
+          });
+        }
       }
     });
   }
