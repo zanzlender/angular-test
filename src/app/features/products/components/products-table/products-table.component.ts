@@ -1,20 +1,9 @@
-import {
-  AfterViewInit,
-  Component,
-  effect,
-  inject,
-  signal,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import {
-  MatTable,
-  MatTableDataSource,
-  MatTableModule,
-} from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,15 +15,8 @@ import { UpdateProductDialog } from '../update-product-dialog/update-product-dia
 import { CurrentUserService } from '@/app/shared/services/current-user-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyExchangeService } from '@/app/shared/services/currency-exchange.service';
-import {
-  combineLatestWith,
-  Observable,
-  ReplaySubject,
-  Subscription,
-} from 'rxjs';
+import { combineLatestWith, Subscription } from 'rxjs';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { DataSource } from '@angular/cdk/collections';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'products-table',
@@ -72,18 +54,6 @@ export class ProductsTableComponent implements AfterViewInit {
     'Category',
   ];
 
-  announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple language, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
-    }
-  }
-
   dataSource: MatTableDataSource<Product>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
@@ -119,10 +89,6 @@ export class ProductsTableComponent implements AfterViewInit {
     });
   }
 
-  ngOnDestroy() {
-    this.productSubscription?.unsubscribe();
-  }
-
   ngAfterViewInit() {
     if (this.paginator) {
       this.dataSource.paginator = this.paginator;
@@ -130,6 +96,18 @@ export class ProductsTableComponent implements AfterViewInit {
     if (this.sort) {
       this.dataSource.sort = this.sort;
       this.dataSource.sort.ngOnChanges;
+    }
+  }
+
+  ngOnDestroy() {
+    this.productSubscription?.unsubscribe();
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
     }
   }
 
@@ -177,23 +155,5 @@ export class ProductsTableComponent implements AfterViewInit {
   updateProduct(product: Product) {
     this.productsService.updateProduct(product);
     this.productsService.getProducts();
-  }
-}
-class ExampleDataSource extends MatTable<Product> {
-  private _dataStream = new ReplaySubject<Product[]>();
-
-  constructor(initialData: Product[]) {
-    super();
-    this.setData(initialData);
-  }
-
-  connect(): Observable<Product[]> {
-    return this._dataStream;
-  }
-
-  disconnect() {}
-
-  setData(data: Product[]) {
-    this._dataStream.next(data);
   }
 }
