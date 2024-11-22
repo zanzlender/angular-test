@@ -17,18 +17,34 @@ import { toSignal } from '@angular/core/rxjs-interop';
   ],
   template: `
     <div
-      class="w-full max-w-sm mx-auto px-6 py-8 flex flex-col items-center gap-2"
+      class="w-full max-w-sm mx-auto px-6 py-8 flex flex-col items-center gap-4"
     >
-      <h1 class="text-2xl font-semibold text-center mb-4">Seed data</h1>
+      <h1 class="text-2xl font-semibold text-center mb-2">Seed data</h1>
       <p class="mb-6">To get some examples from the start you can</p>
 
       <button
         [disabled]="isLoading() || isComplete()"
-        class="w-full max-w-[200px]"
+        class="w-full max-w-[200px] mb-4"
         mat-flat-button
         (click)="seedProducts()"
       >
-        {{ isLoading() ? 'Loading...' : isComplete() ? 'Completed' : 'Seed' }}
+        {{
+          isLoading()
+            ? 'Loading...'
+            : isComplete()
+            ? 'Completed'
+            : 'Seed the products'
+        }}
+      </button>
+
+      <p class="mb-6">you can also delete all products, and start over</p>
+
+      <button
+        class="w-full max-w-[200px] mb-4"
+        mat-flat-button
+        (click)="deleteAllProducts()"
+      >
+        Delete all products
       </button>
     </div>
   `,
@@ -57,6 +73,10 @@ export class HomePage {
     products.forEach((prod) => {
       this.productsService.createProduct(prod);
     });
+  }
+
+  deleteAllProducts() {
+    this.productsService.deleteAllProducts();
   }
 }
 

@@ -95,4 +95,9 @@ export class ProductsService {
 
     this.productsSubject.next([...updatedProducts]);
   }
+
+  deleteAllProducts() {
+    this.localStorageService.removeItem(LOCAL_STORAGE_PRODUCTS_KEY);
+    this.productsSubject.next([]);
+  }
 }
