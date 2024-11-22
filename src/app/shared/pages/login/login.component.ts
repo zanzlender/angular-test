@@ -55,10 +55,9 @@ import { Router } from '@angular/router';
   `,
 })
 export class LoginPage {
-  constructor(
-    private currentUserService: CurrentUserService,
-    private router: Router
-  ) {}
+  currentUserService = inject(CurrentUserService);
+  currentUser$ = this.currentUserService.currentUser$;
+  constructor(private router: Router) {}
 
   private _snackBar = inject(MatSnackBar);
 
@@ -71,9 +70,9 @@ export class LoginPage {
   });
 
   ngOnInit() {
-    if (this.currentUserService.currentUser$.value !== undefined) {
-      this.router.navigateByUrl('/products');
-    }
+    this.currentUser$.subscribe((x) => {
+      x !== undefined ? this.router.navigateByUrl('/products') : null;
+    });
 
     this.signInForm.events.subscribe((event) => {
       if (event instanceof FormSubmittedEvent && this.signInForm.valid) {

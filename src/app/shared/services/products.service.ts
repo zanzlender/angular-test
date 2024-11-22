@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { inject, Injectable, signal } from '@angular/core';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { Product, ProductInsert } from '../models/product.model';
-import { CurrencyExchangeService } from './currency-exchange.service';
 
 const LOCAL_STORAGE_PRODUCTS_KEY = 'products';
 
@@ -12,33 +11,27 @@ const LOCAL_STORAGE_PRODUCTS_KEY = 'products';
 })
 // TODO: switch to w/e fetching method
 export class ProductsService {
-  constructor(
-    private http: HttpClient,
-    private localStorageService: LocalStorageService,
-    private currencyExchangeService: CurrencyExchangeService
-  ) {}
+  private localStorageService = inject(LocalStorageService);
+  /*  private readonly products = signal<Product[]>([]);
+  products$ = toObservable(this.products); */
 
-  getProducts(): Observable<Product[]> {
-    const fetchProducts = new Promise<Product[]>((resolve, reject) => {
-      try {
-        const products = this.localStorageService.getItem(
-          LOCAL_STORAGE_PRODUCTS_KEY
-        );
-        const productsData = (
-          products ? JSON.parse(products) : []
-        ) as Product[];
+  private productsSubject = new BehaviorSubject<Product[]>([]);
+  products$: Observable<Product[]> = this.productsSubject.asObservable();
 
-        resolve(productsData);
-      } catch (err) {
-        reject(err);
-      }
-    });
-
-    const productsObservable = from(fetchProducts);
-    return productsObservable;
+  constructor() {
+    this.getProducts();
   }
 
-  createProduct(product: ProductInsert): Observable<Product> {
+  getProducts(): void {
+    const products = this.localStorageService.getItem(
+      LOCAL_STORAGE_PRODUCTS_KEY
+    );
+    const productsData = (products ? JSON.parse(products) : []) as Product[];
+
+    this.productsSubject.next(productsData);
+  }
+
+  createProduct(product: ProductInsert): void {
     const productsString = this.localStorageService.getItem(
       LOCAL_STORAGE_PRODUCTS_KEY
     );
@@ -58,18 +51,12 @@ export class ProductsService {
       ...product,
       id: newId,
     });
-
     this.localStorageService.setItem(
       LOCAL_STORAGE_PRODUCTS_KEY,
       JSON.stringify(products)
     );
 
-    return new Observable<Product>((observer) => {
-      observer.next({
-        ...product,
-        id: newId,
-      });
-    });
+    this.productsSubject.next(products);
   }
 
   updateProduct(product: Product): void {
@@ -89,6 +76,8 @@ export class ProductsService {
       LOCAL_STORAGE_PRODUCTS_KEY,
       JSON.stringify(products)
     );
+
+    this.productsSubject.next([...products]);
   }
 
   deleteProduct(productId: number): void {
@@ -107,5 +96,7 @@ export class ProductsService {
       LOCAL_STORAGE_PRODUCTS_KEY,
       JSON.stringify(updatedProducts)
     );
+
+    this.productsSubject.next([...products]);
   }
 }

@@ -12,7 +12,7 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
-import { Product } from '../../models/product.model';
+import { Product } from '@/app/shared/models/product.model';
 import { UpdateProductFormComponent } from '../update-product-form/update-product-form.component';
 import { MatButtonModule } from '@angular/material/button';
 

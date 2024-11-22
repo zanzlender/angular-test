@@ -15,6 +15,13 @@ import { RouterModule } from '@angular/router';
 
         <nav class="flex flex-row gap-6 justify-between items-center">
           <a
+            routerLink="/"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="text-lg font-semibold hover:cursor-pointer"
+            >Home</a
+          >
+          <a
             routerLink="/products"
             routerLinkActive="active"
             ariaCurrentWhenActive="page"

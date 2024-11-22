@@ -1,26 +1,29 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { LoggedInUser } from '../models/logged-in-user.model';
 import { LocalStorageService } from './local-storage.service';
-import { BehaviorSubject } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CurrentUserService {
-  constructor(private localStorageService: LocalStorageService) {}
-  currentUser$ = new BehaviorSubject<LoggedInUser | undefined>(undefined);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly router = inject(Router);
+  private readonly currentUser = signal<LoggedInUser | undefined>(undefined);
+  currentUser$ = toObservable(this.currentUser);
 
   setCurrentUser() {
     const productsString = this.localStorageService.getItem('auth_token');
     if (!productsString) {
-      this.currentUser$.next(undefined);
+      this.currentUser.set(undefined);
       return;
     }
     try {
       const user = JSON.parse(productsString) as LoggedInUser;
-      this.currentUser$.next(user);
+      this.currentUser.set(user);
     } catch (err) {
-      this.currentUser$.next(undefined);
+      this.currentUser.set(undefined);
     }
   }
 
@@ -32,7 +35,7 @@ export class CurrentUserService {
         token: 'valid-auth-token',
       };
       this.localStorageService.setItem('auth_token', JSON.stringify(newUser));
-      this.currentUser$.next(newUser);
+      this.currentUser.set(newUser);
       return true;
     }
     return false;
@@ -40,6 +43,7 @@ export class CurrentUserService {
 
   signOutUser() {
     this.localStorageService.removeItem('auth_token');
-    this.currentUser$.next(undefined);
+    this.currentUser.set(undefined);
+    this.router.navigateByUrl('/');
   }
 }

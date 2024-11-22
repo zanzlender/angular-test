@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
+  computed,
   inject,
+  signal,
+  effect,
 } from '@angular/core';
-import { ProductsTableComponent } from '../../components/products-table/products-table.component';
+import { ProductsTableComponent } from '@/app/features/products/components/products-table/products-table.component';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatDialog,
@@ -14,40 +16,49 @@ import {
   MatDialogClose,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { AddProductFormComponent } from '../../components/add-product-form/add-product-form.component';
+import { AddProductFormComponent } from '@/app/features/products/components/add-product-form/add-product-form.component';
 import { CurrentUserService } from '../../services/current-user-service.service';
-import { HttpClient } from '@angular/common/http';
+import { ExportService } from '../../services/export.service';
+import { ProductsService } from '../../services/products.service';
+import { combineLatestWith, map } from 'rxjs';
+import { CurrencyExchangeService } from '../../services/currency-exchange.service';
 
 @Component({
   selector: 'products-page',
   imports: [ProductsTableComponent, MatButtonModule],
+  providers: [ExportService],
   template: `
     <div class="w-full">
       <div class="flex gap-3 justify-between items-center mb-3">
         <p class="font-semibold text-2xl">Products</p>
-        @if (isLoggedIn) {
+        <button mat-flat-button (click)="exportAsCSV()">Download CSV</button>
+        @if (isLoggedIn()) {
         <button mat-flat-button (click)="openDialog()">Add product</button>
         }
       </div>
-
       <products-table></products-table>
     </div>
   `,
 })
 export class ProductsPage {
-  constructor(
-    private currentUserService: CurrentUserService,
-    private http: HttpClient
-  ) {}
+  currentUser$ = inject(CurrentUserService).currentUser$;
+  private readonly products$ = inject(ProductsService).products$;
+  private readonly currencyExchange$ = inject(CurrencyExchangeService)
+    .currencyExchange$;
   readonly dialog = inject(MatDialog);
+  readonly exportService = inject(ExportService);
 
-  isLoggedIn: boolean = false;
+  isLoggedIn = signal<boolean>(false);
+  isLogged = computed(() => {
+    return true;
+  });
 
   ngOnInit() {
-    this.currentUserService.currentUser$.subscribe((user) => {
+    this.currentUser$.subscribe((user) => {
       if (user !== undefined) {
-        this.isLoggedIn = true;
-        console.log('USR', user);
+        this.isLoggedIn.set(true);
+      } else {
+        this.isLoggedIn.set(false);
       }
     });
   }
@@ -57,6 +68,23 @@ export class ProductsPage {
       width: '100%',
       maxWidth: '576px',
     });
+  }
+
+  exportAsCSV() {
+    this.products$.subscribe((p) => {});
+
+    this.products$
+      .pipe(combineLatestWith(this.currencyExchange$))
+      .subscribe(([products, currency]) => {
+        console.log('HSASKJDHGAS', products);
+        const data = products.map((p) => {
+          return {
+            ...p,
+            price_usd: (p.price * Number(currency?.quotes?.EURUSD)).toFixed(2),
+          };
+        });
+        this.exportService.DownloadFile(data, 'products');
+      });
   }
 }
 

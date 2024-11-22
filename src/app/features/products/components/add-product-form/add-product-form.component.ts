@@ -1,5 +1,10 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Output,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -7,19 +12,22 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ProductsService } from '../../services/products.service';
-import { Product } from '../../models/product.model';
-import { Observable, Subscription } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { HttpClient } from '@angular/common/http';
+import { ProductsService } from '@/app/shared/services/products.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 const CATEGORIES = ['Electronics', 'Food', 'Furniture'];
+const CURRENCIES = ['EUR', 'USD'];
 
 @Component({
-  selector: 'update-product-form',
+  selector: 'add-product-form',
+  templateUrl: './add-product-form.component.html',
+  styleUrl: './add-product-form.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -27,50 +35,34 @@ const CATEGORIES = ['Electronics', 'Food', 'Furniture'];
     MatSelectModule,
     MatButtonModule,
   ],
-  templateUrl: './update-product-form.component.html',
-  styleUrl: './update-product-form.component.css',
 })
-export class UpdateProductFormComponent {
+export class AddProductFormComponent {
   constructor(
     private http: HttpClient,
     private productsService: ProductsService
   ) {}
 
   private _snackBar = inject(MatSnackBar);
-
-  @Input() product: Product | undefined = undefined;
   @Output() submitEmitter: EventEmitter<void> = new EventEmitter<void>();
 
   categories: string[] = CATEGORIES;
+  acceptedCurrencies: string[] = CURRENCIES;
+
   registerForm = new FormGroup({
-    name: new FormControl(this.product?.name, [
-      Validators.required,
-      Validators.minLength(5),
-    ]),
-    price: new FormControl(this.product?.price, [
-      Validators.required,
-      Validators.min(1),
-    ]),
-    category: new FormControl(this.product?.category, [
+    name: new FormControl('', [Validators.required, Validators.minLength(5)]),
+    price: new FormControl(0, [Validators.required, Validators.min(1)]),
+    category: new FormControl('', [
       Validators.required,
       Validators.minLength(1),
     ]),
-    description: new FormControl(this.product?.description),
+    description: new FormControl(''),
   });
 
   ngOnInit() {
-    this.registerForm.patchValue({
-      name: this.product?.name,
-      price: this.product?.price,
-      category: this.product?.category,
-      description: this.product?.description,
-    });
-
     this.registerForm.events.subscribe((event) => {
       if (event instanceof FormSubmittedEvent) {
         if (this.registerForm.valid) {
-          this.productsService.updateProduct({
-            id: this.product?.id ?? 0,
+          this.productsService.createProduct({
             name: this.registerForm.value.name ?? '',
             price: this.registerForm.value.price ?? 0,
             category: this.registerForm.value.category ?? '',
@@ -78,7 +70,7 @@ export class UpdateProductFormComponent {
             currency: 'EUR',
           });
           this.submitEmitter.emit();
-          this._snackBar.open('Product updated!', 'Dismiss', {
+          this._snackBar.open('Product created!', 'Dismiss', {
             duration: 2000,
           });
         }
