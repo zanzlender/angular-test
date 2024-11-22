@@ -5,6 +5,10 @@ export type Product = {
   category: string;
   description: string;
   currency: string;
+  otherPrices?: Array<{
+    currency: string;
+    price: number;
+  }>;
 };
 
 export type ProductInsert = Omit<Product, 'id'>;

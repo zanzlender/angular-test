@@ -16,6 +16,7 @@ import {
 } from '@angular/material/dialog';
 import { AddProductFormComponent } from '../../components/add-product-form/add-product-form.component';
 import { CurrentUserService } from '../../services/current-user-service.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'products-page',
@@ -34,7 +35,10 @@ import { CurrentUserService } from '../../services/current-user-service.service'
   `,
 })
 export class ProductsPage {
-  constructor(private currentUserService: CurrentUserService) {}
+  constructor(
+    private currentUserService: CurrentUserService,
+    private http: HttpClient
+  ) {}
   readonly dialog = inject(MatDialog);
 
   isLoggedIn: boolean = false;

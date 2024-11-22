@@ -22,6 +22,9 @@ import { ConfirmDeleteProductDialog } from '../delete-product-dialog/delete-prod
 import { UpdateProductDialog } from '../update-product-dialog/update-product-dialog.component';
 import { CurrentUserService } from '../../services/current-user-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { CurrencyExchangeService } from '../../services/currency-exchange.service';
+import { combineLatest, combineLatestWith, map } from 'rxjs';
 
 @Component({
   selector: 'products-table',
@@ -35,12 +38,17 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatSortModule,
     MatMenuModule,
   ],
+  providers: [ProductsService],
   templateUrl: './products-table.component.html',
   styleUrl: './products-table.component.css',
 })
 export class ProductsTableComponent implements AfterViewInit {
   readonly confirmDeleteDialog = inject(MatDialog);
   readonly updateProductDialog = inject(MatDialog);
+  readonly productsService = inject(ProductsService);
+  products$ = this.productsService.getProducts();
+  readonly currentUserService = inject(CurrentUserService);
+  currencyExchange$ = inject(CurrencyExchangeService).currencyExchange$;
   private _snackBar = inject(MatSnackBar);
 
   isLoggedIn: boolean = false;
@@ -48,7 +56,8 @@ export class ProductsTableComponent implements AfterViewInit {
   displayedColumns: string[] = [
     'Id',
     'Name',
-    'Price',
+    'Price EUR',
+    'Price USD',
     'Description',
     'Category',
   ];
@@ -58,22 +67,29 @@ export class ProductsTableComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @ViewChild(MatSort) sort: MatSort | undefined;
 
-  constructor(
-    private productsService: ProductsService,
-    private currentUserService: CurrentUserService
-  ) {
+  constructor() {
     this.dataSource = new MatTableDataSource<Product>();
   }
 
+  readonly p: Product[] = [];
+
   ngOnInit() {
+    this.products$
+      .pipe(combineLatestWith(this.currencyExchange$))
+      .subscribe(([products, currency]) => {
+        this.dataSource.data = products.map((p) => {
+          return {
+            ...p,
+            price_usd: (p.price * Number(currency?.quotes.EURUSD)).toFixed(2),
+          };
+        });
+      });
+
     this.currentUserService.currentUser$.subscribe((user) => {
       if (user !== undefined) {
         this.isLoggedIn = true;
         this.displayedColumns.push('Action');
       }
-    });
-    this.productsService.getProducts().subscribe((products) => {
-      this.dataSource.data = products;
     });
   }
 

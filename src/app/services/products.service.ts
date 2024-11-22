@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { Product, ProductInsert } from '../models/product.model';
+import { CurrencyExchangeService } from './currency-exchange.service';
 
 const LOCAL_STORAGE_PRODUCTS_KEY = 'products';
 
@@ -13,7 +14,8 @@ const LOCAL_STORAGE_PRODUCTS_KEY = 'products';
 export class ProductsService {
   constructor(
     private http: HttpClient,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private currencyExchangeService: CurrencyExchangeService
   ) {}
 
   getProducts(): Observable<Product[]> {
@@ -25,6 +27,7 @@ export class ProductsService {
         const productsData = (
           products ? JSON.parse(products) : []
         ) as Product[];
+
         resolve(productsData);
       } catch (err) {
         reject(err);

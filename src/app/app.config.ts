@@ -13,6 +13,7 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { AuthGuardService } from './services/auth-guard.service';
+import { authHeaderInterceptor } from './services/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,10 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
-    provideHttpClient(
-      withFetch()
-      //withInterceptors()
-    ),
+    provideHttpClient(withFetch(), withInterceptors([authHeaderInterceptor])),
     AuthGuardService,
   ],
 };
