@@ -11,7 +11,6 @@ export class ExportService {
     let blob = new Blob(['\ufeff' + csvData], {
       type: 'text/csv;charset=utf-8;',
     });
-    console.log('BLOB', blob);
     let dwldLink = document.createElement('a');
     let url = URL.createObjectURL(blob);
     let isSafariBrowser =
@@ -42,13 +41,15 @@ export class ExportService {
     }
     row = row.slice(0, -1);
     str += row + '\r\n';
+
+    console.log('ARRA', array);
     for (let i = 0; i < array.length; i++) {
-      let line = i + 1 + '';
+      let line = '';
       for (let index in headerList) {
         let head = headerList[index];
-        line += separator + array[i][head];
+        line += array[i][head] + separator;
       }
-      str += line + '\r\n';
+      str += line.substring(0, line.length - 1) + '\r\n';
     }
     return str;
   }
