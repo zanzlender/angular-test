@@ -55,6 +55,8 @@ export class CurrencyExchangeService {
         this.http
           .get<CurrencyExchange>(EXCHANGE_HOST_API_BASE_URL)
           .subscribe((data) => {
+            // Their timestamp is not valid so we set it to now
+            data.timestamp = new Date().getTime();
             this.currencyExchange.set(data);
             this.localStorageService.setItem(
               'currency_exchange',
