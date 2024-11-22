@@ -32,8 +32,14 @@ export class CurrentUserServiceService {
         token: 'valid-auth-token',
       };
       this.localStorageService.setItem('auth_token', JSON.stringify(newUser));
-
       this.currentUser$.next(newUser);
+      return true;
     }
+    return false;
+  }
+
+  signOutUser() {
+    this.localStorageService.removeItem('auth_token');
+    this.currentUser$.next(undefined);
   }
 }
