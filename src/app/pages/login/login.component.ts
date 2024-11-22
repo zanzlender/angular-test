@@ -9,7 +9,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { CurrentUserServiceService } from '../../services/current-user-service.service';
+import { CurrentUserService } from '../../services/current-user-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -56,7 +56,7 @@ import { Router } from '@angular/router';
 })
 export class LoginPage {
   constructor(
-    private currentUserService: CurrentUserServiceService,
+    private currentUserService: CurrentUserService,
     private router: Router
   ) {}
 

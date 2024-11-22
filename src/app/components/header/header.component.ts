@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CurrentUserServiceService } from '../../services/current-user-service.service';
+import { CurrentUserService } from '../../services/current-user-service.service';
 import { LoggedInUser } from '../../models/logged-in-user.model';
 import { RouterModule } from '@angular/router';
 
@@ -44,7 +44,7 @@ import { RouterModule } from '@angular/router';
   `,
 })
 export class HeaderComponent {
-  constructor(private currentUserService: CurrentUserServiceService) {}
+  constructor(private currentUserService: CurrentUserService) {}
   currentUser: LoggedInUser | undefined = undefined;
 
   ngOnInit() {

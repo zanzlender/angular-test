@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class CurrentUserServiceService {
+export class CurrentUserService {
   constructor(private localStorageService: LocalStorageService) {}
   currentUser$ = new BehaviorSubject<LoggedInUser | undefined>(undefined);
 

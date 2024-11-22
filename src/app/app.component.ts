@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { CurrentUserServiceService } from './services/current-user-service.service';
+import { CurrentUserService } from './services/current-user-service.service';
 import { HeaderComponent } from './components/header/header.component';
 
 @Component({
@@ -10,7 +10,7 @@ import { HeaderComponent } from './components/header/header.component';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  constructor(private currentUserService: CurrentUserServiceService) {}
+  constructor(private currentUserService: CurrentUserService) {}
 
   title = 'angular-test';
 

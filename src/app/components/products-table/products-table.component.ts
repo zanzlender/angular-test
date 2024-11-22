@@ -20,6 +20,7 @@ import { ProductsService } from '../../services/products.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDeleteProductDialog } from '../delete-product-dialog/delete-product-dialog.component';
 import { UpdateProductDialog } from '../update-product-dialog/update-product-dialog.component';
+import { CurrentUserService } from '../../services/current-user-service.service';
 
 @Component({
   selector: 'products-table',
@@ -40,24 +41,36 @@ export class ProductsTableComponent implements AfterViewInit {
   readonly confirmDeleteDialog = inject(MatDialog);
   readonly updateProductDialog = inject(MatDialog);
 
+  isLoggedIn: boolean = false;
+
   displayedColumns: string[] = [
     'Id',
     'Name',
     'Price',
     'Description',
     'Category',
-    'Action',
   ];
+
   dataSource: MatTableDataSource<Product>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @ViewChild(MatSort) sort: MatSort | undefined;
 
-  constructor(private productsService: ProductsService) {
+  constructor(
+    private productsService: ProductsService,
+    private currentUserService: CurrentUserService
+  ) {
     this.dataSource = new MatTableDataSource<Product>();
   }
 
   ngOnInit() {
+    this.currentUserService.currentUser$.subscribe((user) => {
+      if (user !== undefined) {
+        this.isLoggedIn = true;
+        console.log('USR', user);
+        this.displayedColumns.push('Action');
+      }
+    });
     this.productsService.getProducts().subscribe((products) => {
       this.dataSource.data = products;
     });
