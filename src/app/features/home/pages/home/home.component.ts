@@ -31,10 +31,6 @@ import { take } from 'rxjs';
       >
         {{ isLoading() && !isComplete() ? 'Loading...' : 'Seed' }}
       </button>
-
-      <p>COMP {{ products().length }}</p>
-      <p>COMP {{ isComplete() }}</p>
-      <p>LOAD {{ isLoading() }}</p>
     </div>
   `,
 })
