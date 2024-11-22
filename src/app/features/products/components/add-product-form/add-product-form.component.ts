@@ -16,7 +16,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { HttpClient } from '@angular/common/http';
 import { ProductsService } from '@/app/features/products/services/products.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -37,12 +36,9 @@ const CURRENCIES = ['EUR', 'USD'];
   ],
 })
 export class AddProductFormComponent {
-  constructor(
-    private http: HttpClient,
-    private productsService: ProductsService
-  ) {}
-
+  private productsService = inject(ProductsService);
   private _snackBar = inject(MatSnackBar);
+
   @Output() submitEmitter: EventEmitter<void> = new EventEmitter<void>();
 
   categories: string[] = CATEGORIES;

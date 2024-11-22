@@ -6,7 +6,6 @@ import { MatInputModule } from '@angular/material/input';
 import { ProductsService } from '@/app/features/products/services/products.service';
 import { Product } from '@/app/shared/models/product.model';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { take } from 'rxjs';
 
 @Component({
   selector: 'login-page',
@@ -24,12 +23,12 @@ import { take } from 'rxjs';
       <p class="mb-6">To get some examples from the start you can</p>
 
       <button
-        [disabled]="isLoading() && !isComplete()"
+        [disabled]="isLoading() || isComplete()"
         class="w-full max-w-[200px]"
         mat-flat-button
         (click)="seedProducts()"
       >
-        {{ isLoading() && !isComplete() ? 'Loading...' : 'Seed' }}
+        {{ isLoading() ? 'Loading...' : isComplete() ? 'Completed' : 'Seed' }}
       </button>
     </div>
   `,

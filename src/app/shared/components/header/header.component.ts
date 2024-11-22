@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CurrentUserService } from '@/app/shared/services/current-user-service.service';
-import { LoggedInUser } from '@/app/shared/models/logged-in-user.model';
 import { RouterModule } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'header-component',
@@ -28,7 +28,7 @@ import { RouterModule } from '@angular/router';
             class="text-lg font-semibold hover:cursor-pointer"
             >Products</a
           >
-          @if (currentUser) {
+          @if (currentUser() !== undefined) {
           <a
             routerLinkActive="active"
             ariaCurrentWhenActive="page"
@@ -51,14 +51,8 @@ import { RouterModule } from '@angular/router';
   `,
 })
 export class HeaderComponent {
-  constructor(private currentUserService: CurrentUserService) {}
-  currentUser: LoggedInUser | undefined = undefined;
-
-  ngOnInit() {
-    this.currentUserService.currentUser$.subscribe((user) => {
-      this.currentUser = user;
-    });
-  }
+  private currentUserService = inject(CurrentUserService);
+  currentUser = toSignal(this.currentUserService.currentUser$);
 
   Logout() {
     this.currentUserService.signOutUser();

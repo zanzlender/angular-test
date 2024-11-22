@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import {
   FormControl,
@@ -30,11 +29,7 @@ const CATEGORIES = ['Electronics', 'Food', 'Furniture'];
   styleUrl: './update-product-form.component.css',
 })
 export class UpdateProductFormComponent {
-  constructor(
-    private http: HttpClient,
-    private productsService: ProductsService
-  ) {}
-
+  private readonly productsService = inject(ProductsService);
   private _snackBar = inject(MatSnackBar);
 
   @Input() product: Product | undefined = undefined;

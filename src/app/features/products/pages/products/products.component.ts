@@ -39,12 +39,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
         </div>
       </div>
       <products-table></products-table>
-
-      <div class="flex flex-col gap-4">
-        @for (item of productsSignal(); track $index) {
-        <p>{{ item.name }}</p>
-        }
-      </div>
     </div>
   `,
 })

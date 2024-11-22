@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { CurrentUserService } from '@/app/shared/services/current-user-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'login-page',
@@ -55,11 +56,18 @@ import { Router } from '@angular/router';
   `,
 })
 export class LoginPage {
+  private _snackBar = inject(MatSnackBar);
   currentUserService = inject(CurrentUserService);
   currentUser$ = this.currentUserService.currentUser$;
-  constructor(private router: Router) {}
+  currentUser = toSignal(this.currentUser$);
 
-  private _snackBar = inject(MatSnackBar);
+  constructor(private router: Router) {
+    effect(() => {
+      if (this.currentUser() !== undefined) {
+        this.router.navigateByUrl('/');
+      }
+    });
+  }
 
   signInForm = new FormGroup({
     username: new FormControl('', [
@@ -70,10 +78,6 @@ export class LoginPage {
   });
 
   ngOnInit() {
-    this.currentUser$.subscribe((x) => {
-      x !== undefined ? this.router.navigateByUrl('/products') : null;
-    });
-
     this.signInForm.events.subscribe((event) => {
       if (event instanceof FormSubmittedEvent && this.signInForm.valid) {
         if (this.signInForm.valid) {
