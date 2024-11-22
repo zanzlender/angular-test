@@ -1,10 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ProductsService } from '@/app/shared/services/products.service';
+import { ProductsService } from '@/app/features/products/services/products.service';
 import { Product } from '@/app/shared/models/product.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'login-page',
@@ -22,25 +24,33 @@ import { Product } from '@/app/shared/models/product.model';
       <p class="mb-6">To get some examples from the start you can</p>
 
       <button
-        [disabled]="isLoading()"
+        [disabled]="isLoading() && !isComplete()"
         class="w-full max-w-[200px]"
         mat-flat-button
         (click)="seedProducts()"
       >
-        {{ isLoading() ? 'Loading...' : 'Seed' }}
+        {{ isLoading() && !isComplete() ? 'Loading...' : 'Seed' }}
       </button>
+
+      <p>COMP {{ products().length }}</p>
+      <p>COMP {{ isComplete() }}</p>
+      <p>LOAD {{ isLoading() }}</p>
     </div>
   `,
 })
 export class HomePage {
   private readonly productsService = inject(ProductsService);
+  readonly numberOfProducts = 10;
+
   isLoading = signal(false);
+  products = toSignal(this.productsService.products$, {
+    initialValue: [] as Product[],
+  });
+  isComplete = computed(() => this.products().length >= this.numberOfProducts);
 
-  numberOfProducts = 10;
-
-  ngOnInit() {
-    this.productsService.products$.subscribe((x) => {
-      if (x.length >= this.numberOfProducts) {
+  constructor() {
+    effect(() => {
+      if (this.isComplete()) {
         this.isLoading.set(false);
       }
     });

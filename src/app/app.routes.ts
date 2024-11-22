@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthGuardService } from '@/app/shared/services/auth-guard.service';
+import { AuthGuardService } from '@/app/features/auth/services/auth-guard.service';
 
 export const routes: Routes = [
   {
@@ -12,14 +12,14 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('@/app/shared/pages/login/login.component').then(
+      import('@/app/features/auth/pages/login/login.component').then(
         (m) => m.LoginPage
       ),
   },
   {
     path: 'products',
     loadComponent: () =>
-      import('@/app/shared/pages/products/products.component').then(
+      import('@/app/features/products/pages/products/products.component').then(
         (m) => m.ProductsPage
       ),
   },
@@ -27,7 +27,7 @@ export const routes: Routes = [
   {
     path: 'private',
     loadComponent: () =>
-      import('@/app/shared/pages/products/products.component').then(
+      import('@/app/features/products/pages/products/products.component').then(
         (m) => m.ProductsPage
       ),
     canActivate: [AuthGuardService],

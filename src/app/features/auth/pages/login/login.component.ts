@@ -9,7 +9,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { CurrentUserService } from '../../services/current-user-service.service';
+import { CurrentUserService } from '@/app/shared/services/current-user-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -36,7 +36,7 @@ import { Router } from '@angular/router';
             }
           </mat-form-field>
           <mat-form-field class="example-full-width">
-            <mat-label>Passwrod</mat-label>
+            <mat-label>Password</mat-label>
             <input
               id="password-input"
               type="password"

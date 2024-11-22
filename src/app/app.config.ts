@@ -12,8 +12,8 @@ import {
   withFetch,
   withInterceptors,
 } from '@angular/common/http';
-import { AuthGuardService } from '@/app/shared/services/auth-guard.service';
-import { authHeaderInterceptor } from '@/app/shared/services/auth-interceptor';
+import { AuthGuardService } from '@/app/features/auth/services/auth-guard.service';
+import { authHeaderInterceptor } from '@/app/features/auth/services/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

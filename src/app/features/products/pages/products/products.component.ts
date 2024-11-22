@@ -4,7 +4,6 @@ import {
   computed,
   inject,
   signal,
-  effect,
 } from '@angular/core';
 import { ProductsTableComponent } from '@/app/features/products/components/products-table/products-table.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,11 +16,12 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { AddProductFormComponent } from '@/app/features/products/components/add-product-form/add-product-form.component';
-import { CurrentUserService } from '../../services/current-user-service.service';
-import { ExportService } from '../../services/export.service';
-import { ProductsService } from '../../services/products.service';
-import { combineLatestWith, map } from 'rxjs';
-import { CurrencyExchangeService } from '../../services/currency-exchange.service';
+import { CurrentUserService } from '@/app/shared/services/current-user-service.service';
+import { ExportService } from '@/app/shared/services/export.service';
+import { ProductsService } from '@/app/features/products/services/products.service';
+import { combineLatestWith } from 'rxjs';
+import { CurrencyExchangeService } from '@/app/shared/services/currency-exchange.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'products-page',
@@ -31,18 +31,27 @@ import { CurrencyExchangeService } from '../../services/currency-exchange.servic
     <div class="w-full">
       <div class="flex gap-3 justify-between items-center mb-3">
         <p class="font-semibold text-2xl">Products</p>
-        <button mat-flat-button (click)="exportAsCSV()">Download CSV</button>
-        @if (isLoggedIn()) {
-        <button mat-flat-button (click)="openDialog()">Add product</button>
-        }
+        <div class="flex gap-3 items-center">
+          <button mat-flat-button (click)="exportAsCSV()">Download CSV</button>
+          @if (isLoggedIn()) {
+          <button mat-flat-button (click)="openDialog()">Add product</button>
+          }
+        </div>
       </div>
       <products-table></products-table>
+
+      <div class="flex flex-col gap-4">
+        @for (item of productsSignal(); track $index) {
+        <p>{{ item.name }}</p>
+        }
+      </div>
     </div>
   `,
 })
 export class ProductsPage {
   currentUser$ = inject(CurrentUserService).currentUser$;
   private readonly products$ = inject(ProductsService).products$;
+  productsSignal = toSignal(this.products$);
   private readonly currencyExchange$ = inject(CurrencyExchangeService)
     .currencyExchange$;
   readonly dialog = inject(MatDialog);

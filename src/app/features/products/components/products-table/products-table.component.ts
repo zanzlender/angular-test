@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Product } from '@/app/shared/models/product.model';
-import { ProductsService } from '@/app/shared/services/products.service';
+import { ProductsService } from '@/app/features/products/services/products.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDeleteProductDialog } from '../delete-product-dialog/delete-product-dialog.component';
 import { UpdateProductDialog } from '../update-product-dialog/update-product-dialog.component';
@@ -82,7 +82,6 @@ export class ProductsTableComponent implements AfterViewInit {
     this.products$
       .pipe(combineLatestWith(this.currencyExchange$))
       .subscribe(([products, currency]) => {
-        console.log('HSASKJDHGAS', products);
         this.dataSource.data = products.map((p) => {
           return {
             ...p,

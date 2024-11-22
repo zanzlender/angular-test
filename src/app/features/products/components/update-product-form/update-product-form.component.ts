@@ -11,9 +11,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ProductsService } from '@/app/shared/services/products.service';
+import { ProductsService } from '@/app/features/products/services/products.service';
 import { Product } from '@/app/shared/models/product.model';
-import { Observable, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 const CATEGORIES = ['Electronics', 'Food', 'Furniture'];

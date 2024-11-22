@@ -17,7 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { HttpClient } from '@angular/common/http';
-import { ProductsService } from '@/app/shared/services/products.service';
+import { ProductsService } from '@/app/features/products/services/products.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 const CATEGORIES = ['Electronics', 'Food', 'Furniture'];

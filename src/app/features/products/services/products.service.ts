@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
-import { BehaviorSubject, Observable, from } from 'rxjs';
-import { LocalStorageService } from './local-storage.service';
-import { Product, ProductInsert } from '../models/product.model';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { LocalStorageService } from '@/app/shared/services/local-storage.service';
+import { Product, ProductInsert } from '@/app/shared/models/product.model';
 
 const LOCAL_STORAGE_PRODUCTS_KEY = 'products';
 
@@ -97,6 +96,6 @@ export class ProductsService {
       JSON.stringify(updatedProducts)
     );
 
-    this.productsSubject.next([...products]);
+    this.productsSubject.next([...updatedProducts]);
   }
 }

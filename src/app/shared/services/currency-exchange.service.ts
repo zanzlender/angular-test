@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { EXCHANGE_HOST_API_BASE_URL } from './auth-interceptor';
+import { EXCHANGE_HOST_API_BASE_URL } from '@/app/features/auth/services/auth-interceptor';
 import { LocalStorageService } from './local-storage.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
