@@ -43,12 +43,10 @@ export class CurrencyExchangeService {
         if (parsedData.success !== true) {
           this.localStorageService.removeItem('currency_exchange');
           throw new Error('Currency Exchange is not valid');
-          return;
         }
 
         if (this.isDateOlderThanOneDay(new Date(parsedData.timestamp))) {
           throw new Error('Currency Exchange is older than 1 day');
-          return;
         }
 
         this.currencyExchange.set(parsedData);

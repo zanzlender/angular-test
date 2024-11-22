@@ -11,9 +11,6 @@ const LOCAL_STORAGE_PRODUCTS_KEY = 'products';
 // TODO: switch to w/e fetching method
 export class ProductsService {
   private localStorageService = inject(LocalStorageService);
-  /*  private readonly products = signal<Product[]>([]);
-  products$ = toObservable(this.products); */
-
   private productsSubject = new BehaviorSubject<Product[]>([]);
   products$: Observable<Product[]> = this.productsSubject.asObservable();
 

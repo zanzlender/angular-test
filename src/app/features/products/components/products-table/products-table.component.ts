@@ -1,9 +1,20 @@
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  effect,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import {
+  MatTable,
+  MatTableDataSource,
+  MatTableModule,
+} from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,8 +26,15 @@ import { UpdateProductDialog } from '../update-product-dialog/update-product-dia
 import { CurrentUserService } from '@/app/shared/services/current-user-service.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CurrencyExchangeService } from '@/app/shared/services/currency-exchange.service';
-import { combineLatestWith, Subscription } from 'rxjs';
+import {
+  combineLatestWith,
+  Observable,
+  ReplaySubject,
+  Subscription,
+} from 'rxjs';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { DataSource } from '@angular/cdk/collections';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'products-table',
@@ -159,5 +177,23 @@ export class ProductsTableComponent implements AfterViewInit {
   updateProduct(product: Product) {
     this.productsService.updateProduct(product);
     this.productsService.getProducts();
+  }
+}
+class ExampleDataSource extends MatTable<Product> {
+  private _dataStream = new ReplaySubject<Product[]>();
+
+  constructor(initialData: Product[]) {
+    super();
+    this.setData(initialData);
+  }
+
+  connect(): Observable<Product[]> {
+    return this._dataStream;
+  }
+
+  disconnect() {}
+
+  setData(data: Product[]) {
+    this._dataStream.next(data);
   }
 }

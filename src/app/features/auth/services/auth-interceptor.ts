@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 // TODO move to .env
 export const EXCHANGE_HOST_API_BASE_URL = 'https://api.exchangerate.host';
-const EXCHANGE_HOST_API_KEY = 'e14627b17d3343b23173612c43d4d4e2';
+const EXCHANGE_HOST_API_KEY = '47ce6b5e4f779b80ad0ae720d36f2888';
 const CURRENCIES = ['USD', 'EUR'];
 const EXCHANGE_HOST_API_URL = new URL(
   EXCHANGE_HOST_API_BASE_URL +
